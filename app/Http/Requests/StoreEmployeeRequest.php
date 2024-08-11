@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreEmployeeRequest extends FormRequest
 {
@@ -30,17 +32,32 @@ class StoreEmployeeRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'image.required' => 'Gambar wajib diisi.',
             'name.required' => 'Nama wajib diisi.',
+            'name.string' => 'Nama harus berupa string.',
             'phone.required' => 'Nomor telepon wajib diisi.',
+            'phone.string' => 'Nomor telepon harus berupa string.',
             'division.required' => 'Divisi wajib diisi.',
+            'division.string' => 'Divisi harus berupa string.',
             'division.uuid' => 'Divisi harus berupa UUID yang valid.',
             'division.exists' => 'Divisi tidak ditemukan.',
             'position.required' => 'Posisi wajib diisi.',
+            'position.string' => 'Posisi harus berupa string.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah digunakan.',
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'status' => 'error',
+            'message' => $validator->errors()->first(),
+        ], 422));
     }
 
 }

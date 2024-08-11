@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdateEmployeeRequest extends FormRequest
 {
@@ -39,5 +41,13 @@ class UpdateEmployeeRequest extends FormRequest
             'division.uuid' => 'Divisi harus berupa UUID yang valid.',
             'division.exists' => 'Divisi tidak ditemukan.'
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'status' => 'error',
+            'message' => $validator->errors()->first(),
+        ], 422));
     }
 }
