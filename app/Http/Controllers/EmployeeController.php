@@ -102,9 +102,21 @@ class EmployeeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Employee $employee)
     {
-        //
+        try {
+            $employee->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Karyawan berhasil dihapus',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan saat menghapus karyawan',
+            ], 500);
+        }
     }
 
     public function getAllDivisions(Request $request)
