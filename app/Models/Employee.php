@@ -17,4 +17,17 @@ class Employee extends Model
     public function division() {
         return $this->belongsTo(Division::class);
     }
+
+
+    //* Penggunaan scope query
+    public function scopeFilter($query, $filters)
+    {
+        if (isset($filters['name'])) {
+            $query->where('name', 'like', '%' . $filters['name'] . '%');
+        }
+
+        if (isset($filters['division_id'])) {
+            $query->where('division_id', $filters['division_id']);
+        }
+    }
 }

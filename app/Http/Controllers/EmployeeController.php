@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Division;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
@@ -10,9 +11,27 @@ class EmployeeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $filters = $request->only(['name', 'division_id']);
+
+        $employees = Employee::filter($filters)
+            ->with('division')
+            ->paginate(10);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data retrieved successfully',
+            'data' => [
+                'employees' => $employees->items(),
+            ],
+            'pagination' => [
+                'current_page' => $employees->currentPage(),
+                'total_pages' => $employees->lastPage(),
+                'total_items' => $employees->total(),
+                'per_page' => $employees->perPage(),
+            ],
+        ]);
     }
 
     /**
