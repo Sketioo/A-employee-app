@@ -54,7 +54,6 @@ class EmployeeController extends Controller
         $validatedData['division_id'] = $validatedData['division'];
         unset($validatedData['division']);
 
-
         $employee = Employee::create($validatedData);
 
         return response()->json([
@@ -87,10 +86,12 @@ class EmployeeController extends Controller
 
         $validatedData = $request->validated();
 
-        $validatedData['division_id'] = $validatedData['division'];
-        unset($validatedData['division']);
+        if (isset($validatedData['division'])) {
+            $validatedData['division_id'] = $validatedData['division'];
+            unset($validatedData['division']);
+        }
 
-        $employee->update($validatedData->validated());
+        $employee->update($validatedData);
 
         return response()->json([
             'status' => 'success',
