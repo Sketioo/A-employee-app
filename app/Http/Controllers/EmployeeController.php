@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreEmployeeRequest;
 use App\Models\Division;
 use App\Models\Employee;
 use Illuminate\Http\Request;
@@ -45,9 +46,19 @@ class EmployeeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreEmployeeRequest $request)
     {
-        //
+        $validatedData = $request->validated();
+
+        $validatedData['division_id'] = $validatedData['division'];
+        unset($validatedData['division']);
+        
+        $employee = Employee::create($validatedData);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Employee created successfully',
+        ], 201);
     }
 
     /**
