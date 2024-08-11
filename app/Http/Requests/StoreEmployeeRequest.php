@@ -33,13 +33,13 @@ class StoreEmployeeRequest extends FormRequest
     public function messages()
     {
         return [
-            'image.required' => 'Image is required.',
-            'name.required' => 'Name is required.',
-            'phone.required' => 'Phone number is required.',
-            'division.required' => 'Division is required.',
-            'division.uuid' => 'Division must be a valid UUID.',
-            'division.exists' => 'Division does not exist.',
-            'position.required' => 'Position is required.',
+            'image.required' => 'Gambar wajib diisi.',
+            'name.required' => 'Nama wajib diisi.',
+            'phone.required' => 'Nomor telepon wajib diisi.',
+            'division.required' => 'Divisi wajib diisi.',
+            'division.uuid' => 'Divisi harus berupa UUID yang valid.',
+            'division.exists' => 'Divisi tidak ditemukan.',
+            'position.required' => 'Posisi wajib diisi.',
         ];
     }
 

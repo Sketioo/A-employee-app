@@ -19,7 +19,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     //* Resourceful route for employees
-    Route::resource('/employees', EmployeeController::class);
+    Route::apiResource('employees', EmployeeController::class);
 
     //* Custom routes
     Route::post('/logout', [AuthController::class, 'logout']);

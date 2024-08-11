@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEmployeeRequest;
+use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Division;
 use App\Models\Employee;
 use Illuminate\Http\Request;
@@ -52,7 +53,8 @@ class EmployeeController extends Controller
 
         $validatedData['division_id'] = $validatedData['division'];
         unset($validatedData['division']);
-        
+
+
         $employee = Employee::create($validatedData);
 
         return response()->json([
@@ -80,9 +82,20 @@ class EmployeeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateEmployeeRequest $request, Employee $employee)
     {
-        //
+
+        $validatedData = $request->validated();
+
+        $validatedData['division_id'] = $validatedData['division'];
+        unset($validatedData['division']);
+
+        $employee->update($validatedData->validated());
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Employee updated successfully',
+        ], 200);
     }
 
     /**

@@ -23,7 +23,14 @@ class LoginRequest extends FormRequest
     {
         return [
             'username' => ['required','string'],
-            'password' => ['required','string'],
+            'password' => ['required'],
+        ];
+    }
+
+    public function messages() : array {
+        return [
+            'username.required' => 'Username wajib diisi.',
+            'password.required' => 'Password wajib diisi.',
         ];
     }
 }
