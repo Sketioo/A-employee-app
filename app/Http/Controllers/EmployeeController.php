@@ -15,26 +15,32 @@ class EmployeeController extends Controller
      */
     public function index(Request $request)
     {
-        $filters = $request->only(['name', 'division_id']);
+        try {
+            $filters = $request->only(['name', 'division_id']);
 
-        $employees = Employee::filter($filters)
-            ->with('division')
-            ->paginate(10);
+            $employees = Employee::filter($filters)
+                ->with('division')
+                ->paginate(10);
 
-        return response()->json([
-            'status' => 'success',
-            //gunakan bahasa indonesia
-            'message' => 'Data Karyawan ditemukan',
-            'data' => [
-                'employees' => $employees->items(),
-            ],
-            'pagination' => [
-                'current_page' => $employees->currentPage(),
-                'total_pages' => $employees->lastPage(),
-                'total_items' => $employees->total(),
-                'per_page' => $employees->perPage(),
-            ],
-        ]);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data Karyawan ditemukan',
+                'data' => [
+                    'employees' => $employees->items(),
+                ],
+                'pagination' => [
+                    'current_page' => $employees->currentPage(),
+                    'total_pages' => $employees->lastPage(),
+                    'total_items' => $employees->total(),
+                    'per_page' => $employees->perPage(),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan saat mengambil data karyawan.',
+            ], 500);
+        }
     }
 
     /**
@@ -50,17 +56,24 @@ class EmployeeController extends Controller
      */
     public function store(StoreEmployeeRequest $request)
     {
-        $validatedData = $request->validated();
+        try {
+            $validatedData = $request->validated();
 
-        $validatedData['division_id'] = $validatedData['division'];
-        unset($validatedData['division']);
+            $validatedData['division_id'] = $validatedData['division'];
+            unset($validatedData['division']);
 
-        $employee = Employee::create($validatedData);
+            $employee = Employee::create($validatedData);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Karyawan berhasil ditambahkan',
-        ], 201);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Karyawan berhasil ditambahkan',
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan saat menambahkan karyawan.',
+            ], 500);
+        }
     }
 
     /**
@@ -84,20 +97,26 @@ class EmployeeController extends Controller
      */
     public function update(UpdateEmployeeRequest $request, Employee $employee)
     {
+        try {
+            $validatedData = $request->validated();
 
-        $validatedData = $request->validated();
+            if (isset($validatedData['division'])) {
+                $validatedData['division_id'] = $validatedData['division'];
+                unset($validatedData['division']);
+            }
 
-        if (isset($validatedData['division'])) {
-            $validatedData['division_id'] = $validatedData['division'];
-            unset($validatedData['division']);
+            $employee->update($validatedData);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Karyawan berhasil diperbaharui',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan saat memperbaharui data karyawan.',
+            ], 500);
         }
-
-        $employee->update($validatedData);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Karyawan berhasil diperbaharui',
-        ], 200);
     }
 
     /**
@@ -107,7 +126,7 @@ class EmployeeController extends Controller
     {
         try {
             $employee->delete();
-    
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Karyawan berhasil dihapus',
@@ -122,20 +141,28 @@ class EmployeeController extends Controller
 
     public function getAllDivisions(Request $request)
     {
-        $divisions = Division::filterByName($request->input('name'))->paginate(10);
+        try {
+            $divisions = Division::filterByName($request->input('name'))->paginate(10);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Data Divisi ditemukan',
-            'data' => [
-                'divisions' => $divisions->items(),
-            ],
-            'pagination' => [
-                'current_page' => $divisions->currentPage(),
-                'per_page' => $divisions->perPage(),
-                'total' => $divisions->total(),
-                'last_page' => $divisions->lastPage(),
-            ],
-        ]);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data Divisi ditemukan',
+                'data' => [
+                    'divisions' => $divisions->items(),
+                ],
+                'pagination' => [
+                    'current_page' => $divisions->currentPage(),
+                    'per_page' => $divisions->perPage(),
+                    'total' => $divisions->total(),
+                    'last_page' => $divisions->lastPage(),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan saat mengambil data divisi.',
+            ], 500);
+        }
     }
+
 }
