@@ -15,14 +15,14 @@ use Illuminate\Support\Facades\Route;
 |
  */
 
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+Route::apiResource('employees', EmployeeController::class);
+Route::middleware(['auth:sanctum'])->group(function () {
     //* Resourceful route for employees
-    Route::apiResource('employees', EmployeeController::class);
 
     //* Custom routes
-    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     //* Custom route for divisions
     Route::get('/divisions', [EmployeeController::class, 'getAllDivisions']);
