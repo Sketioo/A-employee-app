@@ -23,7 +23,8 @@ class EmployeeController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Data retrieved successfully',
+            //gunakan bahasa indonesia
+            'message' => 'Data Karyawan ditemukan',
             'data' => [
                 'employees' => $employees->items(),
             ],
@@ -58,7 +59,7 @@ class EmployeeController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Employee created successfully',
+            'message' => 'Karyawan berhasil ditambahkan',
         ], 201);
     }
 
@@ -95,7 +96,7 @@ class EmployeeController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Employee updated successfully',
+            'message' => 'Karyawan berhasil diperbaharui',
         ], 200);
     }
 
@@ -106,7 +107,7 @@ class EmployeeController extends Controller
     {
         try {
             $employee->delete();
-
+    
             return response()->json([
                 'status' => 'success',
                 'message' => 'Karyawan berhasil dihapus',
@@ -125,7 +126,7 @@ class EmployeeController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Divisions retrieved successfully',
+            'message' => 'Data Divisi ditemukan',
             'data' => [
                 'divisions' => $divisions->items(),
             ],
