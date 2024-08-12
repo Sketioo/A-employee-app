@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Division;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class EmployeeController extends Controller
 {
@@ -22,11 +23,25 @@ class EmployeeController extends Controller
                 ->with('division')
                 ->paginate(10);
 
+            $employeesTransformed = $employees->map(function ($employee) {
+                return [
+                    'id' => $employee->id,
+                    'image' => $employee->image,
+                    'name' => $employee->name,
+                    'phone' => $employee->phone,
+                    'division' => [
+                        'id' => $employee->division->id,
+                        'name' => $employee->division->name,
+                    ],
+                    'position' => $employee->position,
+                ];
+            });
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Data Karyawan ditemukan',
                 'data' => [
-                    'employees' => $employees->items(),
+                    'employees' => $employeesTransformed,
                 ],
                 'pagination' => [
                     'current_page' => $employees->currentPage(),
@@ -38,7 +53,7 @@ class EmployeeController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Terjadi kesalahan saat mengambil data karyawan.',
+                'message' => 'Terjadi kesalahan saat mengambil data karyawan',
             ], 500);
         }
     }
@@ -63,6 +78,9 @@ class EmployeeController extends Controller
             unset($validatedData['division']);
 
             $employee = Employee::create($validatedData);
+
+            Cache::forget('employees');
+            Cache::forget('divisions');
 
             return response()->json([
                 'status' => 'success',
@@ -107,6 +125,9 @@ class EmployeeController extends Controller
 
             $employee->update($validatedData);
 
+            Cache::forget('employees');
+            Cache::forget('divisions');
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Karyawan berhasil diperbaharui',
@@ -127,6 +148,9 @@ class EmployeeController extends Controller
         try {
             $employee->delete();
 
+            Cache::forget('employees');
+            Cache::forget('divisions');
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Karyawan berhasil dihapus',
@@ -142,7 +166,19 @@ class EmployeeController extends Controller
     public function getAllDivisions(Request $request)
     {
         try {
-            $divisions = Division::filterByName($request->input('name'))->paginate(10);
+            $cacheKey = 'divisions_' . $request->input('name', 'all');
+            $divisions = Cache::remember($cacheKey, 60, function () use ($request) {
+                return Division::filterByName($request->input('name'))->paginate(10);
+            });
+
+            $transformedDivisions = $divisions->getCollection()->map(function ($division) {
+                return [
+                    'id' => $division->id,
+                    'name' => $division->name,
+                ];
+            });
+
+            $divisions->setCollection($transformedDivisions);
 
             return response()->json([
                 'status' => 'success',
